@@ -14,16 +14,19 @@
    <string>OverwatchCompetitiveRankTracker</string>
   </property>
   <widget class="QWidget" name="centralWidget">
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
    <property name="autoFillBackground">
     <bool>true</bool>
    </property>
    <widget class="QCustomPlot" name="plotWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>19</x>
-      <y>19</y>
-      <width>561</width>
-      <height>361</height>
+      <x>20</x>
+      <y>20</y>
+      <width>559</width>
+      <height>379</height>
      </rect>
     </property>
     <property name="autoFillBackground">

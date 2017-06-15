@@ -6,23 +6,35 @@ Plotter::Plotter()
 
 Plotter::Plotter( Ui::OverwatchCompetitiveRankTrackerClass *ui )
 {
-	FileReader fileReader;
-	QString file_name = fileReader.ChooseFile();
-	std::vector<FileDataTuple> *data = fileReader.ParseFile( file_name );
+	//FileReader fileReader;
+	//QString file_name = fileReader.ChooseFile();
+	//std::vector<FileDataTuple> *data = fileReader.ParseFile( file_name );
 
-	RenderPlot( data, ui );
+	DataBreakdown dataBreakdown;
+	QVector<QVector<double>> multiple_plot_data = dataBreakdown.GetFullPlotData();
+	RenderPlot( multiple_plot_data[ 8 ], multiple_plot_data[ 9 ], ui, QCPScatterStyle::ssCircle, Qt::white, QColor( 249, 158, 26, 255 ), QColor( 249, 158, 26, 255 ) );
+	//RenderPlot( multiple_plot_data[ 2 ], multiple_plot_data[ 3 ], ui, QCPScatterStyle::ssCross, Qt::yellow, QColor( 250, 190, 34, 255 ), QColor( 0, 130, 250, 255 ) );
+	//RenderPlot( multiple_plot_data[ 4 ], multiple_plot_data[ 5 ], ui, QCPScatterStyle::ssSquare, Qt::blue, QColor( 250, 99, 130, 255 ), QColor( 0, 0, 250, 255 ) );
+	RenderPlot( multiple_plot_data[ 0 ], multiple_plot_data[ 1 ], ui, QCPScatterStyle::ssPlus, Qt::green, QColor( 250, 67, 180, 255 ), QColor( 140, 40, 250, 255 ) );
 }
 
-void Plotter::RenderPlot( std::vector<FileDataTuple>* data_ptr, Ui::OverwatchCompetitiveRankTrackerClass *ui )
+void Plotter::RenderPlot( 
+	QVector<double> x_vector, 
+	QVector<double> y_vector, 
+	Ui::OverwatchCompetitiveRankTrackerClass *ui,
+	QCPScatterStyle::ScatterShape symbol,
+	Qt::GlobalColor symbol_color,
+	QColor brush_color,
+	QColor pen_color )
 {
 	// Prepare Data
-	PreparePlotData( data_ptr );
+	//PreparePlotData( data_ptr );
 	// Create and Configure plottable
 	QCPGraph *graph = ui->plotWidget->addGraph();
-	graph->addData( x_, y_ );
-	graph->setScatterStyle( QCPScatterStyle( QCPScatterStyle::ssCircle, QPen( Qt::white, 0.25 ), QBrush( QColor(250, 160, 46, 255)  ), 4.5 ) );
-	graph->setPen( QPen( QColor( 250, 160, 46, 80 ), 2.5 ) );
-	ConfigurePlot( ui, graph );
+	graph->setData( x_vector, y_vector );
+	graph->setScatterStyle( QCPScatterStyle( symbol, QPen( symbol_color, 0.45 ), QBrush( brush_color  ), 4.5 ) );
+	graph->setPen( QPen( pen_color, 1.25 ) );
+	ConfigurePlot( ui, graph, x_vector, y_vector );
 }
 
 void Plotter::PreparePlotData( std::vector<FileDataTuple> *data )
@@ -48,7 +60,7 @@ QCPGraph * Plotter::CreatePlot( QVector<double> x_data, QVector<double> y_data )
 	return nullptr;
 }
 
-void Plotter::ConfigurePlot( Ui::OverwatchCompetitiveRankTrackerClass *ui, QCPGraph *graph )
+void Plotter::ConfigurePlot( Ui::OverwatchCompetitiveRankTrackerClass *ui, QCPGraph *graph, QVector<double> x_vector, QVector<double> y_vector )
 {
 	SetBackgroundColor( ui );
 
@@ -89,9 +101,8 @@ void Plotter::ConfigurePlot( Ui::OverwatchCompetitiveRankTrackerClass *ui, QCPGr
 	ui->plotWidget->yAxis->grid()->setSubGridVisible( true );
 
 	ui->plotWidget->rescaleAxes();
-	ui->plotWidget->xAxis->setRange( 0, FindMaxOfVector( x_ ) + 5 );
-	ui->plotWidget->yAxis->setRange( FindMinOfVector(y_) - 50 , FindMaxOfVector( y_ ) + 50 );
-
+	ui->plotWidget->xAxis->setRange( 0, FindMaxOfVector( x_vector ) + 5 );
+	ui->plotWidget->yAxis->setRange( FindMinOfVector( y_vector ) - 50, FindMaxOfVector( y_vector ) + 50 );
 }
 
 inline void Plotter::SetXValues( QVector<double> x_vector_data ) { x_ = x_vector_data; }

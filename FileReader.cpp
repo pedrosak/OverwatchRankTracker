@@ -2,7 +2,10 @@
 
 FileReader::FileReader()
 {
+	qDebug() << "FileReader Constructor Called!";
 	// Constructor
+	QString file_name = ChooseFile();
+	ParseFile( file_name );
 }
 
 QString FileReader::ChooseFile()
@@ -19,7 +22,7 @@ QString FileReader::ChooseFile()
 	return file_name;
 }
 
-std::vector<FileDataTuple>* FileReader::ParseFile(QString file_name)
+void FileReader::ParseFile(QString file_name)
 {	
 	QFile file( file_name );
 
@@ -44,8 +47,6 @@ std::vector<FileDataTuple>* FileReader::ParseFile(QString file_name)
 
 		data_vector_.push_back( FileDataTuple( index, current_rank_data ) );
 	}
-
-	return &data_vector_;
 }
 
 void FileReader::PrintVector(std::vector<FileDataTuple> data_vector)
@@ -62,7 +63,9 @@ void FileReader::PrintVector(std::vector<FileDataTuple> data_vector)
 	}
 }
 
-std::vector<FileDataTuple>* FileReader::GetDataVector() 
+std::vector<FileDataTuple> FileReader::GetDataVector() 
 { 
-	return &data_vector_; 
+	//int test_size = std::get<0>( data_vector_.back() );
+	//qDebug() << test_size;
+	return data_vector_; 
 }
