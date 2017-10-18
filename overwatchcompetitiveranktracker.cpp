@@ -1,43 +1,33 @@
 #include "overwatchcompetitiveranktracker.h"
-#include "Plotter.h"
+
 OverwatchCompetitiveRankTracker::OverwatchCompetitiveRankTracker(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
-	QWidget *buttons = new QWidget;
 
-	QPushButton *solo_plot_button = new QPushButton( "Solo Queue Plot" );
-	QPushButton *duo_plot_button = new QPushButton( "Duo Queue Plot" );
-	QPushButton *group_plot_button = new QPushButton( "Group Queue Plot" );
+	plotter_ = new  Plotter( &ui );
+	plotter_obj_ptr_ = plotter_->GetObjectPointer();
 
-	QPalette buttons_palette = solo_plot_button->palette();
-	buttons_palette.setColor( QPalette::Button, QColor( 250, 160, 46, 255 ) );
-	buttons_palette.setColor( QPalette::ButtonText, QColor( 88, 79, 74, 255 ) );
-	solo_plot_button->setAutoFillBackground( true );
-	solo_plot_button->setPalette( buttons_palette );
-	solo_plot_button->update();
+	button_ = new Buttons();
+	plot_select_buttons_= button_->CreateButtons();
+	reset_button_ = new QPushButton( "Reload Plot" );
 
-	QHBoxLayout *plot_button_layout = new QHBoxLayout;
+	buttons_layout_ = new QHBoxLayout;
+	buttons_layout_->addWidget( reset_button_ );
+	buttons_layout_->addWidget( plot_select_buttons_);
 
-	plot_button_layout->setSpacing( 1 );
-	plot_button_layout->addStretch( 10 );
-	plot_button_layout->addWidget( solo_plot_button );
-	plot_button_layout->addWidget( duo_plot_button );
-	plot_button_layout->addWidget( group_plot_button );
-	plot_button_layout->addStretch( 1 );
-	buttons->setFixedHeight( 50 );
+	all_buttons_widget_ = new QWidget();
+	all_buttons_widget_->setFixedHeight( 50 );
+	all_buttons_widget_->setLayout( buttons_layout_ );
 
-	buttons->setLayout( plot_button_layout );
-
-	QVBoxLayout *main_layout = new QVBoxLayout;
-	main_layout->addWidget( buttons );
-
-	main_layout->addWidget( ui.plotWidget );
-
-	ui.centralWidget->setLayout( main_layout );
+	window_layout_ = new QVBoxLayout;
+	window_layout_->addWidget( all_buttons_widget_ );
+	window_layout_->addWidget( ui.plotWidget );
+	ui.centralWidget->setLayout( window_layout_ );
 
 	SetBackgroundColor( &ui );
-	Plotter plotter( &ui );
+
+	QObject::connect( reset_button_, SIGNAL( clicked() ), SLOT( testingClick() ) );
 }
 
 OverwatchCompetitiveRankTracker::~OverwatchCompetitiveRankTracker()
@@ -45,12 +35,16 @@ OverwatchCompetitiveRankTracker::~OverwatchCompetitiveRankTracker()
 
 }
 
-
 void OverwatchCompetitiveRankTracker::SetBackgroundColor( Ui::OverwatchCompetitiveRankTrackerClass *ui )
 {
 	QPalette pal = palette();
 	pal.setColor( QPalette::Window, RGB( 6, 6, 6 ) );
 	ui->centralWidget->setAutoFillBackground( true );
 	ui->centralWidget->setPalette( pal );
-	
 }
+
+void OverwatchCompetitiveRankTracker::testingClick()
+{
+	qDebug() << "This is crazy";
+}
+

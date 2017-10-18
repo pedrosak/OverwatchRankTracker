@@ -20,15 +20,19 @@ typedef std::tuple< int, RankeData > FileDataTuple;
 
 class FileReader : public QWidget
 {
+
 friend class DataBreakdown;
 public:
 	FileReader();
+	void FileReader::StartReadingFile();
 	QString FileReader::ChooseFile();
-	void FileReader::ParseFile(QString file_name);
+	void FileReader::ParseFile();
+	QString file_name_;
+
 
 private:
 	std::vector<FileDataTuple> data_vector_;
-
 	void FileReader::PrintVector(std::vector<FileDataTuple> data_vector);
 	std::vector<FileDataTuple> FileReader::GetDataVector();
+
 };

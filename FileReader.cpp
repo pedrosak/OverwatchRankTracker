@@ -4,8 +4,14 @@ FileReader::FileReader()
 {
 	qDebug() << "FileReader Constructor Called!";
 	// Constructor
-	QString file_name = ChooseFile();
-	ParseFile( file_name );
+	//file_name = ChooseFile();
+	//ParseFile();
+}
+
+void FileReader::StartReadingFile()
+{
+	file_name_ = ChooseFile();
+	ParseFile();
 }
 
 QString FileReader::ChooseFile()
@@ -22,11 +28,12 @@ QString FileReader::ChooseFile()
 	return file_name;
 }
 
-void FileReader::ParseFile(QString file_name)
+void FileReader::ParseFile()
 {	
-	QFile file( file_name );
 
-	if( !file.open( QIODevice::ReadOnly ) )
+	QFile file( file_name_ );
+
+	if( !file.open( QIODevice::ReadWrite ) )
 	{
 		QMessageBox::information( 0, "File is Read-Only", file.errorString() );
 	}
@@ -47,7 +54,10 @@ void FileReader::ParseFile(QString file_name)
 
 		data_vector_.push_back( FileDataTuple( index, current_rank_data ) );
 	}
+
+	file.close();
 }
+
 
 void FileReader::PrintVector(std::vector<FileDataTuple> data_vector)
 {

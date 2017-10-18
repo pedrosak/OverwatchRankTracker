@@ -3,12 +3,23 @@
 DataBreakdown::DataBreakdown()
 {
 	// Constructor
+	//FileReader fileReader;
+	//data_from_fileReader_ = fileReader.GetDataVector();
+	//PreparePlotData();
+	//GenerateGroupInfoPlot();
+	//CalculateFitLine();
+}
+
+void DataBreakdown::StartBreakingDownData()
+{
 	FileReader fileReader;
+	fileReader.StartReadingFile();
 	data_from_fileReader_ = fileReader.GetDataVector();
 	PreparePlotData();
 	GenerateGroupInfoPlot();
 	CalculateFitLine();
 }
+
 
 void DataBreakdown::GenerateGroupInfoPlot()
 {
@@ -16,15 +27,18 @@ void DataBreakdown::GenerateGroupInfoPlot()
 	//		1: Solo Games ( - )
 	//		2: Dual Game ( + )
 	//		3: Three or more Games ( * )
+	//		4: Lost of SR due to leaving ( ^ )
 	int solo_index = 0;
 	int duo_index = 0;
 	int group_index = 0;
+	int sr_loss_index = 0;
 
 	int number_of_solo_queues = CountElementsInVector( "-" );
 	int number_of_duo_queues = CountElementsInVector( "+" );
 	int number_of_group_queues = CountElementsInVector( "*" );
+	int number_of_sr_losses = CountElementsInVector( "^" );
 
-	ResizeAllXYvalues( number_of_solo_queues, number_of_duo_queues, number_of_group_queues );
+	ResizeAllXYvalues( number_of_solo_queues, number_of_duo_queues, number_of_group_queues, number_of_sr_losses );
 
 	for( auto const &iter_count : data_from_fileReader_ )
 	{
@@ -47,6 +61,12 @@ void DataBreakdown::GenerateGroupInfoPlot()
 			group_queue_x_value_[ group_index ] = std::get<0>( iter_count ); // This is a test to see if this graph will overlway on top of original graph
 			group_queue_y_value_[ group_index ] = std::get<1>( iter_count ).rank;
 			group_index += 1;
+		}
+		else if( current_group_symbol == "^" )
+		{
+			loss_sr_x_value_[ sr_loss_index ] = std::get<0>( iter_count );
+			loss_sr_y_value_[ sr_loss_index ] = std::get<1>( iter_count ).rank;
+			sr_loss_index += 1;
 		}
 		else
 		{
@@ -107,7 +127,7 @@ void DataBreakdown::PreparePlotData()
 	}
 }
 
-void DataBreakdown::ResizeAllXYvalues( int solo_queue_ize, int duo_queue_size, int group_queue_size )
+void DataBreakdown::ResizeAllXYvalues( int solo_queue_ize, int duo_queue_size, int group_queue_size, int number_of_sr_losses )
 {
 	solo_queue_x_value_.resize( solo_queue_ize );
 	solo_queue_y_value_.resize( solo_queue_ize );
@@ -115,6 +135,8 @@ void DataBreakdown::ResizeAllXYvalues( int solo_queue_ize, int duo_queue_size, i
 	duo_queue_y_value_.resize( duo_queue_size );
 	group_queue_x_value_.resize( group_queue_size );
 	group_queue_y_value_.resize( group_queue_size );
+	loss_sr_x_value_.resize( number_of_sr_losses );
+	loss_sr_y_value_.resize( number_of_sr_losses );
 }
 
 int DataBreakdown::CountElementsInVector( QString element )
@@ -137,7 +159,6 @@ int DataBreakdown::CalculateAverage( QVector<double> value )
 	{
 		sum_temp = sum_temp + value.at( count_the_value );
 	}
-	qDebug() << sum_temp / value.size();
 	return sum_temp/value.size();
 }
 
@@ -155,6 +176,8 @@ QVector<QVector<double>> DataBreakdown::GetFullPlotData()
 	full_plot_data_vector.push_back( group_queue_y_value_ );
 	full_plot_data_vector.push_back( fit_line_x_value_ );
 	full_plot_data_vector.push_back( fit_line_y_value_ );
+	full_plot_data_vector.push_back( loss_sr_x_value_ );
+	full_plot_data_vector.push_back( loss_sr_y_value_ );
 
 	return full_plot_data_vector;
 }

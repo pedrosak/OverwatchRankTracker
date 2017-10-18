@@ -8,20 +8,23 @@ class DataBreakdown
 {
 public:
 	DataBreakdown();
+	void DataBreakdown::StartBreakingDownData();
 	QVector<QVector<double>> DataBreakdown::GetFullPlotData();
 	void DataBreakdown::GenerateGroupInfoPlot();
 	void DataBreakdown::SeparateByDate();
 	void DataBreakdown::CalculateFitLine();
 	void DataBreakdown::PreparePlotData();
+
 private:
 	std::vector<FileDataTuple> data_from_fileReader_;
 	QVector<double> x_, y_;
 	QVector<double> solo_queue_x_value_, solo_queue_y_value_;
 	QVector<double> duo_queue_x_value_, duo_queue_y_value_;
 	QVector<double> group_queue_x_value_, group_queue_y_value_;
+	QVector<double> loss_sr_x_value_, loss_sr_y_value_;
 	QVector<double> fit_line_x_value_, fit_line_y_value_;
 
-	void DataBreakdown::ResizeAllXYvalues( int solo_queue_ize, int duo_queue_size, int group_queue_size );
+	void DataBreakdown::ResizeAllXYvalues( int solo_queue_ize, int duo_queue_size, int group_queue_size, int number_of_sr_losses );
 	int DataBreakdown::CountElementsInVector( QString element );
 
 	int DataBreakdown::CalculateAverage( QVector<double> value );
